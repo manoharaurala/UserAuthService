@@ -1,5 +1,6 @@
 package org.ruby.userauthservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import lombok.Data;
@@ -13,6 +14,7 @@ public class Role extends BaseModel {
     /*
     allowed permissions for this role
      */
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
 

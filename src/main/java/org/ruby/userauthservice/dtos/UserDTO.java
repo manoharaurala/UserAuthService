@@ -1,7 +1,6 @@
 package org.ruby.userauthservice.dtos;
 
 import lombok.Data;
-import org.ruby.userauthservice.models.Role;
 
 import java.util.List;
 
@@ -9,5 +8,5 @@ import java.util.List;
 public class UserDTO {
     private String email;
     private String name;
-    private List<Role> roles;
+    private List<RoleDTO> roles;
 }

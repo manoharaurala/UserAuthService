@@ -3,7 +3,9 @@ package org.ruby.userauthservice.dtos;
 import org.ruby.userauthservice.models.User;
 
 public class UserMapper {
-    private UserMapper() {}
+    private UserMapper() {
+    }
+
     public static UserDTO mapToDTO(User user) {
         if (user == null) {
             return null;
@@ -11,7 +13,7 @@ public class UserMapper {
         UserDTO userDTO = new UserDTO();
         userDTO.setName(user.getName());
         userDTO.setEmail(user.getEmail());
-        userDTO.setRoles(user.getRoles());
+        userDTO.setRoles(user.getRoles().stream().map(role -> RoleMapper.toDTO(role)).toList());
         return userDTO;
     }
 
@@ -22,7 +24,7 @@ public class UserMapper {
         User user = new User();
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
-        user.setRoles(userDTO.getRoles());
+        user.setRoles(userDTO.getRoles().stream().map(roleDTO -> RoleMapper.fromDTO(roleDTO)).toList());
         return user;
     }
 }

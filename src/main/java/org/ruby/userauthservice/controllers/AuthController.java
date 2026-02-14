@@ -62,28 +62,21 @@ public class AuthController {
      */
 
     @PostMapping("/signup")
+
     public ResponseEntity<UserDTO> signup(@RequestBody SignupRequestDTO signupRequestDTO) {
-        try {
-            User createdUser = authService.signup(signupRequestDTO.getEmail(),
-                    signupRequestDTO.getName(),
-                    signupRequestDTO.getPassword());
-            if (createdUser == null) throw new RuntimeException("Error while creating user");
-            return new ResponseEntity<>(UserMapper.mapToDTO(createdUser), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        User createdUser = authService.signup(signupRequestDTO.getEmail(),
+                signupRequestDTO.getName(),
+                signupRequestDTO.getPassword());
+        if (createdUser == null) throw new RuntimeException("Error while creating user");
+        return new ResponseEntity<>(UserMapper.mapToDTO(createdUser), HttpStatus.CREATED);
 
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        try {
-            User loggedInUser = authService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
-            if (loggedInUser == null) throw new RuntimeException("Invalid credentials");
-            return new ResponseEntity<>(UserMapper.mapToDTO(loggedInUser), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        User loggedInUser = authService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+        if (loggedInUser == null) throw new RuntimeException("Invalid credentials");
+        return new ResponseEntity<>(UserMapper.mapToDTO(loggedInUser), HttpStatus.OK);
 
     }
 
