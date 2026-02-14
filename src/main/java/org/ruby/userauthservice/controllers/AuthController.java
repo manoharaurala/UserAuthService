@@ -1,13 +1,14 @@
 package org.ruby.userauthservice.controllers;
 
-import org.ruby.userauthservice.dtos.LoginRequestDTO;
-import org.ruby.userauthservice.dtos.SignupRequestDTO;
-import org.ruby.userauthservice.dtos.UserDTO;
-import org.ruby.userauthservice.dtos.UserMapper;
+import org.ruby.userauthservice.dtos.*;
 import org.ruby.userauthservice.models.User;
+import org.ruby.userauthservice.pojos.UserToken;
 import org.ruby.userauthservice.services.IAuthService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,10 +75,52 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        User loggedInUser = authService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
-        if (loggedInUser == null) throw new RuntimeException("Invalid credentials");
-        return new ResponseEntity<>(UserMapper.mapToDTO(loggedInUser), HttpStatus.OK);
+         /*
+            How do we return the token in response?
+            We will add token into headers and we can easily set headers in ResponseEntity
 
+            MultiValueMap is used for representing headers and the key names here
+            should be key against which we will add this token?
+
+            The token i want to send back to client should in form of what in frontend??
+            ---Cookies
+             */
+
+        UserToken loggedInUser = authService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        /*
+            cookie, token
+            cookie, session id
+            cookie, something else...
+        */
+        headers.add("Authorization Bearer", loggedInUser.getToken());
+        headers.add(HttpHeaders.COOKIE, loggedInUser.getToken());
+        HttpHeaders responseHeaders = new HttpHeaders(headers);
+
+        return new ResponseEntity<>(
+                UserMapper.mapToDTO(loggedInUser.getUser()),
+                responseHeaders,
+                HttpStatus.OK
+        );
+
+    }
+
+    /*
+        Input : Token
+        Output: boolean
+        Type: POST because we will send token in request body
+
+         */
+
+    @PostMapping("/validateToken")
+    public ResponseEntity<String> validateToken(@RequestBody ValidateTokenDTO validateTokenDTO) {
+        Boolean result = authService.validateToken(validateTokenDTO.getToken());
+
+        if (result == false) {
+            throw new RuntimeException("Invalid token");
+        } else {
+            return new ResponseEntity<>("Token is valid", HttpStatus.OK);
+        }
     }
 
 
